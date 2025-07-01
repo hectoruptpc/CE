@@ -87,33 +87,35 @@ include("includes/head.php");
                         <div class="tab-pane fade show active" id="individual" role="tabpanel" aria-labelledby="individual-tab">
                             <form id="formEstudiante" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                                 <!-- Sección 1: Identificación -->
-                                <h5 class="mb-3"><i class="fas fa-id-card me-2"></i> Identificación</h5>
-                                <div class="row g-3 mb-4">
-                                    <div class="col-md-6">
-    <div class="mb-3">
-        <label for="cedula_completa" class="form-label required">Cédula</label>
-        <div class="input-group">
-            <select class="form-select" id="tipo_cedula" name="tipo_cedula" style="max-width: 80px;">
-                <?php foreach ($tiposCedula as $tipo): ?>
-                    <option value="<?php echo htmlspecialchars($tipo['tipo']); ?>">
-                        <?php echo htmlspecialchars($tipo['tipo']); ?>-
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <input type="text" class="form-control" id="numero_cedula" name="numero_cedula" placeholder="Ej: 12345678" required>
-            <input type="hidden" id="idusuario" name="idusuario">
+<h5 class="mb-3"><i class="fas fa-id-card me-2"></i> Identificación</h5>
+<div class="row g-3 mb-4">
+    <!-- Nombre primero -->
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="nombre" class="form-label required">Nombre Completo</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" required>
         </div>
-        <small class="text-muted">Formato: V-12345678 o E-12345678</small>
+    </div>
+    
+    <!-- Cédula después -->
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="cedula_completa" class="form-label required">Cédula</label>
+            <div class="input-group">
+                <select class="form-select" id="tipo_cedula" name="tipo_cedula" style="max-width: 80px;">
+                    <?php foreach ($tiposCedula as $tipo): ?>
+                        <option value="<?php echo htmlspecialchars($tipo['tipo']); ?>">
+                            <?php echo htmlspecialchars($tipo['tipo']); ?>-
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <input type="text" class="form-control" id="numero_cedula" name="numero_cedula" placeholder="Ej: 12345678" required>
+                <input type="hidden" id="idusuario" name="idusuario">
+            </div>
+            <small class="text-muted">Formato: V-12345678 o E-12345678</small>
+        </div>
     </div>
 </div>
-                                   
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="nombre" class="form-label required">Nombre Completo</label>
-                                            <input type="text" class="form-control" id="nombre" name="nombre" required>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <!-- Sección 2: Datos Personales -->
                                 <h5 class="mb-3"><i class="fas fa-user-tag me-2"></i> Datos Personales</h5>
@@ -146,15 +148,18 @@ include("includes/head.php");
                                     </div>
                                     
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="edo_civil" class="form-label required">Estado Civil</label>
-                                            <select class="custom-select d-block w-100" id="edo_civil" name="edo_civil" required>
-                                                <option value="" selected disabled>Seleccione una opción</option>
-                                                <?php foreach (obtenerEstadosCiviles() as $estadoCivil): ?>
-                                                    <option value="<?php echo htmlspecialchars($estadoCivil); ?>"><?php echo htmlspecialchars($estadoCivil); ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
+    <div class="mb-3">
+        <label for="edo_civil" class="form-label required">Estado Civil</label>
+        <select class="custom-select d-block w-100" id="edo_civil" name="edo_civil" required>
+            <option value="" selected disabled>Seleccione una opción</option>
+            <?php foreach (obtenerEstadosCiviles($db) as $id => $estadoCivil): ?>
+                <option value="<?php echo htmlspecialchars($id); ?>">
+                    <?php echo htmlspecialchars($estadoCivil); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+</div>
                                         
                                         <div class="mb-3">
                                             <label for="etnia" class="form-label">Etnia</label>
@@ -226,15 +231,16 @@ include("includes/head.php");
                                         </div>
                                         
                                         <div class="mb-3">
-                                            <label for="casaapto" class="form-label">Tipo de Vivienda</label>
-                                            <select class="form-control" id="casaapto" name="casaapto">
-                                                <option value="">Seleccione...</option>
-                                                <option value="Casa">Casa</option>
-                                                <option value="Apartamento">Apartamento</option>
-                                                <option value="Quinta">Quinta</option>
-                                                <option value="Otro">Otro</option>
-                                            </select>
-                                        </div>
+    <label for="casaapto" class="form-label">Tipo de Vivienda</label>
+    <select class="form-control" id="casaapto" name="casaapto">
+        <option value="">Seleccione...</option>
+        <?php foreach (obtenerTiposVivienda($db) as $id => $vivienda): ?>
+            <option value="<?php echo htmlspecialchars($id); ?>">
+                <?php echo htmlspecialchars($vivienda); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+</div>
                                         
                                         <div class="mb-3">
                                             <label for="punto_referencia" class="form-label">Punto de Referencia</label>
@@ -268,17 +274,18 @@ include("includes/head.php");
                                     </div>
                                     
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="tenencia_vivienda" class="form-label">Tenencia de Vivienda</label>
-                                            <select class="form-control" id="tenencia_vivienda" name="tenencia_vivienda">
-                                                <option value="">Seleccione...</option>
-                                                <option value="Propia">Propia</option>
-                                                <option value="Alquilada">Alquilada</option>
-                                                <option value="Familiar">Familiar</option>
-                                                <option value="Otro">Otro</option>
-                                            </select>
-                                        </div>
-                                    </div>
+    <div class="mb-3">
+        <label for="tenencia_vivienda" class="form-label">Tenencia de Vivienda</label>
+        <select class="form-control" id="tenencia_vivienda" name="tenencia_vivienda">
+            <option value="">Seleccione...</option>
+            <?php foreach (obtenerTenenciaViviendas($db) as $id => $tenencia): ?>
+                <option value="<?php echo htmlspecialchars($id); ?>">
+                    <?php echo htmlspecialchars($tenencia); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+</div>
                                 </div>
 
                                 <!-- Sección 6: Salud -->
@@ -338,15 +345,18 @@ include("includes/head.php");
                                     </div>
                                     
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="status" class="form-label required">Status</label>
-                                            <select class="custom-select d-block w-100" id="status" name="status" required>
-                                                <option value="" selected disabled>Seleccione un status</option>
-                                                <option value="1">Activo</option>
-                                                <option value="0">Inactivo</option>
-                                            </select>
-                                        </div>
-                                    </div>
+    <div class="mb-3">
+        <label for="status" class="form-label required">Status</label>
+        <select class="custom-select d-block w-100" id="status" name="status" required>
+            <option value="" selected disabled>Seleccione un status</option>
+            <?php foreach (obtenerOpcionesStatus($db) as $value => $label): ?>
+                <option value="<?php echo htmlspecialchars($value); ?>">
+                    <?php echo htmlspecialchars($label); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+</div>
                                 </div>
 
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">

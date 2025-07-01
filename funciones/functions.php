@@ -3211,8 +3211,168 @@ function obtenerTiposCedula($db) {
 
 
 
+function obtenerEstadosCiviless($db) {
+    // Validar conexión
+    if (!($db instanceof mysqli)) {
+        throw new InvalidArgumentException("Se esperaba una conexión MySQLi válida");
+    }
+
+    $estados = [];
+    $query = "SELECT id, estado_civil FROM estado_civil ORDER BY estado_civil ASC";
+    
+    try {
+        // Preparar sentencia
+        if (!$stmt = $db->prepare($query)) {
+            throw new Exception("Error al preparar la consulta: " . $db->error);
+        }
+        
+        // Ejecutar
+        if (!$stmt->execute()) {
+            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+        
+        // Obtener resultados
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $estados[$row['id']] = $row['estado_civil']; // CORRECCIÓN AQUÍ (faltaba ])
+        }
+        
+        return $estados;
+        
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        return []; // Devuelve array vacío en caso de error
+    } finally {
+        if (isset($stmt)) {
+            $stmt->close();
+        }
+    }
+}
 
 
+function obtenerTiposVivienda($db) {
+    // Validar conexión
+    if (!($db instanceof mysqli)) {
+        throw new InvalidArgumentException("Se esperaba una conexión MySQLi válida");
+    }
+
+    $viviendas = [];
+    $query = "SELECT id, vivienda FROM tipo_vivienda ORDER BY vivienda ASC";
+    
+    try {
+        // Preparar sentencia
+        if (!$stmt = $db->prepare($query)) {
+            throw new Exception("Error al preparar la consulta: " . $db->error);
+        }
+        
+        // Ejecutar
+        if (!$stmt->execute()) {
+            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+        
+        // Obtener resultados
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $viviendas[$row['id']] = $row['vivienda'];
+        }
+        
+        return $viviendas;
+        
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        return []; // Devuelve array vacío en caso de error
+    } finally {
+        if (isset($stmt)) {
+            $stmt->close();
+        }
+    }
+}
+
+
+function obtenerTenenciaViviendas($db) {
+    // Validar conexión
+    if (!($db instanceof mysqli)) {
+        throw new InvalidArgumentException("Se esperaba una conexión MySQLi válida");
+    }
+
+    $tenencias = [];
+    $query = "SELECT id, tenencia FROM tenencia_vivienda ORDER BY tenencia ASC";
+    
+    try {
+        // Preparar sentencia
+        if (!$stmt = $db->prepare($query)) {
+            throw new Exception("Error al preparar la consulta: " . $db->error);
+        }
+        
+        // Ejecutar
+        if (!$stmt->execute()) {
+            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+        
+        // Obtener resultados
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $tenencias[$row['id']] = $row['tenencia'];
+        }
+        
+        return $tenencias;
+        
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        return []; // Devuelve array vacío en caso de error
+    } finally {
+        if (isset($stmt)) {
+            $stmt->close();
+        }
+    }
+}
+
+
+
+function obtenerOpcionesStatus($db) {
+    // Validar conexión
+    if (!($db instanceof mysqli)) {
+        throw new InvalidArgumentException("Se esperaba una conexión MySQLi válida");
+    }
+
+    $statusOptions = [
+        '1' => 'Activo',
+        '0' => 'Inactivo'
+    ];
+    
+    // Opcional: Verificar si los datos existen en la tabla status
+    $query = "SELECT id, status FROM status WHERE id IN (0, 1)";
+    
+    try {
+        if ($stmt = $db->prepare($query)) {
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            // Si hay registros en la tabla, sobreescribimos las opciones
+            if ($result->num_rows > 0) {
+                $statusOptions = [];
+                while ($row = $result->fetch_assoc()) {
+                    $statusOptions[$row['id']] = ($row['id'] == 1) ? 'Activo' : 'Inactivo';
+                }
+            }
+            
+            $stmt->close();
+        }
+        
+        return $statusOptions;
+        
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        // Retorna las opciones por defecto en caso de error
+        return [
+            '1' => 'Activo',
+            '0' => 'Inactivo'
+        ];
+    }
+}
 
 
 
