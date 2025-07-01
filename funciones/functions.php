@@ -3171,6 +3171,59 @@ function obtenerListaCompletaUsuarios() {
 }
 
 
+// Obtener los datos simples
+
+function obtenerTiposCedula($db) {
+    $tipos = [];
+    
+    if (!($db instanceof mysqli)) {
+        throw new InvalidArgumentException("Se esperaba una conexión MySQLi válida");
+    }
+    
+    $query = "SELECT id, tipo FROM tipo_cedula";
+    
+    try {
+        if (!$stmt = $db->prepare($query)) {
+            throw new Exception("Error al preparar la consulta: " . $db->error);
+        }
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+        
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $tipos[] = $row;
+        }
+        
+        $stmt->close();
+        
+        return $tipos;
+    } catch (Exception $e) {
+        // Registrar el error
+        error_log($e->getMessage());
+        
+        // Opcional: puedes devolver un array vacío o false según tu necesidad
+        return [];
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

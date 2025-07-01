@@ -5,6 +5,9 @@ ini_set('display_errors', '1');
 $titulopag = "Agregar Estudiante";
 require_once('../funciones/functions.php');
 
+// Obtener los tipos de cédula
+$tiposCedula = obtenerTiposCedula($db);
+
 // Procesar el formulario cuando se envía
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verificar si es una carga masiva de CSV
@@ -87,19 +90,22 @@ include("includes/head.php");
                                 <h5 class="mb-3"><i class="fas fa-id-card me-2"></i> Identificación</h5>
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="cedula_completa" class="form-label required">Cédula</label>
-                                            <div class="input-group">
-                                                <select class="form-select" id="tipo_cedula" style="max-width: 80px;">
-                                                    <option value="V">V-</option>
-                                                    <option value="E">E-</option>
-                                                </select>
-                                                <input type="text" class="form-control" id="numero_cedula" placeholder="Ej: 12345678" required>
-                                                <input type="hidden" id="idusuario" name="idusuario">
-                                            </div>
-                                            <small class="text-muted">Formato: V-12345678 o E-12345678</small>
-                                        </div>
-                                    </div>
+    <div class="mb-3">
+        <label for="cedula_completa" class="form-label required">Cédula</label>
+        <div class="input-group">
+            <select class="form-select" id="tipo_cedula" name="tipo_cedula" style="max-width: 80px;">
+                <?php foreach ($tiposCedula as $tipo): ?>
+                    <option value="<?php echo htmlspecialchars($tipo['tipo']); ?>">
+                        <?php echo htmlspecialchars($tipo['tipo']); ?>-
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <input type="text" class="form-control" id="numero_cedula" name="numero_cedula" placeholder="Ej: 12345678" required>
+            <input type="hidden" id="idusuario" name="idusuario">
+        </div>
+        <small class="text-muted">Formato: V-12345678 o E-12345678</small>
+    </div>
+</div>
                                    
                                     <div class="col-md-6">
                                         <div class="mb-3">
