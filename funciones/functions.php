@@ -3171,7 +3171,7 @@ function obtenerListaCompletaUsuarios() {
 }
 
 
-// Obtener los datos simples
+// OBTENER LOS DATOS SIMPLES
 
 function obtenerTiposCedula($db) {
     $tipos = [];
